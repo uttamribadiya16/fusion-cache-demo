@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app1:
+    image: your_image_name:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+      - "8443:443"
+    environment:
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: uttam@1998
+      ASPNETCORE_URLS: "http://+:80;https://+:443"
+    volumes:
+      - ./aspnetapp.pfx:/https/aspnetapp.pfx
+
+  app2:
+    image: your_image_name:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+      - "8444:443"
+    environment:
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: uttam@1998
+      ASPNETCORE_URLS: "http://+:80;https://+:443"
+    volumes:
+      - ./aspnetapp.pfx:/https/aspnetapp.pfx

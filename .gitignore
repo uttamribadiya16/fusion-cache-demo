@@ -1,0 +1,54 @@
+# .NET Core
+bin/
+obj/
+out/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET
+appsettings.Development.json
+appsettings.Production.json
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+nugget-packages/
+
+# Entity Framework
+Migrations/
+
+# Rider
+.idea/
+
+# JetBrains
+*.sln.iml
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+~$*
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Docker
+**/Dockerfile
+**/.dockerignore
+docker-compose.override.yml
+
+# Secrets and keys
+secrets.json
+*.pfx
+*.key

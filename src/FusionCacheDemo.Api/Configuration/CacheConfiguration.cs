@@ -4,6 +4,9 @@ using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using ZiggyCreatures.Caching.Fusion.Backplane.Memory;
+using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 
 namespace FusionCacheDemo.Api.Configuration
 {
@@ -17,7 +20,7 @@ namespace FusionCacheDemo.Api.Configuration
             // Configure different cache setups
             ConfigureInMemoryCache(services);
             ConfigureRedisCache(services);
-            ConfigureHybridCache(services);
+            ConfigureHybridCache(services, configuration);
 
             return services;
         }
@@ -54,12 +57,13 @@ namespace FusionCacheDemo.Api.Configuration
                     opt.DefaultEntryOptions = new FusionCacheEntryOptions
                     {
                         Duration = TimeSpan.FromMinutes(10), // Default TTL
-                        IsFailSafeEnabled = true,           // Enable fail-safe
+                        IsFailSafeEnabled = true, // Enable fail-safe
                         FailSafeThrottleDuration = TimeSpan.FromSeconds(5),
                     };
                 })
                 .WithMemoryCache(provider => provider.GetRequiredService<IMemoryCache>()) // In-memory backend
-                .WithSystemTextJsonSerializer();
+                .WithSystemTextJsonSerializer()
+                .WithBackplane(provider => new MemoryBackplane(new MemoryBackplaneOptions()));
 
             Console.WriteLine("FusionCache In-Memory configuration applied.");
         }
@@ -78,6 +82,7 @@ namespace FusionCacheDemo.Api.Configuration
                         Duration = TimeSpan.FromMinutes(10),
                         IsFailSafeEnabled = true,
                         FailSafeThrottleDuration = TimeSpan.FromSeconds(5),
+                        
                     };
                 })
                 .WithDistributedCache(provider => provider.GetRequiredService<IDistributedCache>()) // Redis backend
@@ -89,8 +94,9 @@ namespace FusionCacheDemo.Api.Configuration
         /// <summary>
         /// Configures FusionCache with Hybrid (In-Memory + Redis) caching.
         /// </summary>
-        private static void ConfigureHybridCache(IServiceCollection services)
+        private static void ConfigureHybridCache(IServiceCollection services, IConfiguration configuration)
         {
+            var redisConnectionString = configuration.GetConnectionString("Redis");
             services.AddFusionCache("HybridCache")
                 .WithOptions(opt =>
                 {
@@ -103,6 +109,12 @@ namespace FusionCacheDemo.Api.Configuration
                 })
                 .WithMemoryCache(provider => provider.GetRequiredService<IMemoryCache>()) // In-Memory backend
                 .WithDistributedCache(provider => provider.GetRequiredService<IDistributedCache>()) // Redis backend
+                .WithBackplane(provider => new RedisBackplane(
+                    new RedisBackplaneOptions
+                    {
+                        Configuration = redisConnectionString
+                    }
+                ))
                 .WithSystemTextJsonSerializer();
 
             Console.WriteLine("FusionCache Hybrid configuration applied.");

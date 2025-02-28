@@ -3,6 +3,8 @@ using FusionCacheDemo.Core.Entities;
 using FusionCacheDemo.Infrastructure.Caching;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace FusionCacheDemo.Api.Controllers;
 
@@ -65,7 +67,8 @@ public class ItemController : ControllerBase
     [HttpGet("hybrid")]
     public async Task<ActionResult<CacheResponse<IEnumerable<DenormalizedZipCode>>>> GetAllHybrid()
     {
-        //var existingMemoryData = _inMemoryCache.GetCachedDataOnlyAsync();
+        var existingMemoryData = _inMemoryCache.GetCachedDataOnlyAsync();
+        Console.WriteLine(JsonConvert.SerializeObject(existingMemoryData, Formatting.Indented));
         var stopwatch = Stopwatch.StartNew();
         var items = await _hybridCache.GetAllAsync();
         stopwatch.Stop();
@@ -80,13 +83,43 @@ public class ItemController : ControllerBase
             CacheType = "Hybrid"
         });
     }
+    
+    [HttpGet("inmemory/update")]
+    public async Task<ActionResult<CacheResponse<IEnumerable<DenormalizedZipCode>>>> UpdateAllMemory()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        await _inMemoryCache.UpdateAllAsync(null);
+        stopwatch.Stop();
+
+        return Ok();
+    }
+
+    [HttpGet("redis/update")]
+    public async Task<ActionResult<CacheResponse<IEnumerable<DenormalizedZipCode>>>> UpdateAllRedis()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        await _redisCache.UpdateAllAsync(null);
+        stopwatch.Stop();
+
+        return Ok();
+    }
+
+    [HttpGet("hybrid/update")]
+    public async Task<ActionResult<CacheResponse<IEnumerable<DenormalizedZipCode>>>> UpdateAllHybrid()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        await _hybridCache.UpdateAllAsync(null);
+        stopwatch.Stop();
+
+        return Ok();
+    }
 
     [HttpPost("remove")]
     public async Task<IActionResult> InvalidateCache()
     {
         await _inMemoryCache.InvalidateCacheAsync();
-        await _redisCache.InvalidateCacheAsync();
-        await _hybridCache.InvalidateCacheAsync();
+        // await _redisCache.InvalidateCacheAsync();
+        // await _hybridCache.InvalidateCacheAsync();
         return Ok();
     }
 

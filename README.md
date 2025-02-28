@@ -87,7 +87,8 @@ http://localhost:8080/swagger/index.html
 **Description:** This project handles data access and infrastructure concerns.  
 **Technologies Used:** Entity Framework Core, SQL Server, Redis, etc.
 
-### FusionCache Backplane Integration
+## FusionCache Backplane Integration
+
 **Description:** This section explains how to configure FusionCache with a Backplane to synchronize cache data across multiple nodes.
 **Technologies Used:** Used: FusionCache, Redis
 
@@ -117,9 +118,10 @@ services.AddFusionCache("HybridCache")
     .WithSystemTextJsonSerializer();
 ```   
 
-## Benefits of Using Backplane
+### Benefits of Using Backplane
+
 **Ensures Data Consistency:** Synchronizes cache updates across multiple instances.
 **Improves Performance:** Reduces database queries by maintaining an updated cache.
 **Scalability: Supports** distributed applications efficiently.
 
-For more details, refer to the (FusionCache Backplane Documentation)["https://github.com/ZiggyCreatures/FusionCache/blob/main/docs/Backplane.md"].
+For more details, refer to the [FusionCache Backplane Documentation](https://github.com/ZiggyCreatures/FusionCache/blob/main/docs/Backplane.md).

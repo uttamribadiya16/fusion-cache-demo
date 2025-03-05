@@ -1,6 +1,7 @@
 using FusionCacheDemo.Core.Entities;
 using FusionCacheDemo.Core.Interfaces;
 using FusionCacheDemo.Infrastructure.Data;
+using FusionCacheDemo.Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace FusionCacheDemo.Infrastructure.Repositories;
@@ -21,22 +22,10 @@ public class DenormalizedZipCodeRepository : IDenormalizedZipCodeRepository
 
     public async Task<IEnumerable<DenormalizedZipCode>> GetAllAsync()
     {
-        return new List<DenormalizedZipCode>()
-        {
-            new DenormalizedZipCode()
-            {
-                   ZipCode = "10001",
-                   CityName = "New York",
-                   CountyName = "New York county",
-            },
-            new DenormalizedZipCode()
-            {
-                ZipCode = "10004",
-                CityName = "New York 2",
-                CountyName = "New York county 2",
-            }
-        };
-        return await _context.DenormalizedZipCodes.ToListAsync();
+        return await Task.FromResult(Constants.SampleZipCodes);
+        
+        // Uncomment the following line to fetch data from the database
+        //return await _context.DenormalizedZipCodes.ToListAsync();
     }
 
     public async Task<DenormalizedZipCode> AddAsync(DenormalizedZipCode zipCode)

@@ -1,5 +1,6 @@
 using FusionCacheDemo.Core.Entities;
 using FusionCacheDemo.Core.Interfaces;
+using FusionCacheDemo.Infrastructure.Shared;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace FusionCacheDemo.Infrastructure.Caching;
@@ -43,27 +44,10 @@ public class HybridCacheService
 
     public async Task UpdateAllAsync(IEnumerable<DenormalizedZipCode> updatedItems)
     {
-        // Update the data source (repository)
-        var data = new List<DenormalizedZipCode>()
-        {
-            new DenormalizedZipCode()
-            {
-                ZipCode = "10001",
-                CityName = "New York",
-                CountyName = "New York county",
-            },
-            new DenormalizedZipCode()
-            {
-                ZipCode = "10005",
-                CityName = "New York 2",
-                CountyName = "New York county 2",
-            }
-        };
-
         // Update in-memory and distributed cache (Redis)
         await _cache.SetAsync(
             "items:all",
-            data,
+            Constants.UpdatedSampleZipCodes,
             options => options
                 .SetDuration(TimeSpan.FromDays(7)) // Cache duration
                 .SetFailSafe(true, TimeSpan.FromHours(1)) // Enable fail-safe mode
